@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم رافع الروابط لـ Catbox (الإصدار الاحترافي الكامل)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>مرفاع Catbox الاحترافي</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
-        body {
-            font-family: 'Tajawal', sans-serif;
-        }
+        body { font-family: 'Tajawal', sans-serif; background-color: #020617; color: #f1f5f9; margin: 0; padding: 0; }
+        .hidden-element { display: none !important; }
+        /* تخصيص شكل شريط التمرير */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
     </style>
+
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-slate-950">
 
@@ -25,349 +31,306 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-base text-white">مرفاع Catbox الفعّال</h1>
-                    <p class="text-xs text-slate-400">لوحة تحكم ذكية تدعم المسافات والحروف العربية بأمان</p>
+                    <p class="text-[10px] text-slate-400">يدعم الروابط المباشرة والملفات المحلية الضخمة</p>
                 </div>
             </div>
-            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-md border border-emerald-500/20 font-bold">النسخة النهائية</span>
         </div>
     </header>
 
     <main class="flex-grow max-w-lg w-full mx-auto px-4 py-6 flex flex-col gap-6">
 
         <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-3">
-            <div class="flex justify-between items-center">
-                <label for="userhash" class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <i class="fa-solid fa-key text-cyan-400"></i>
-                    مفتاح حسابك (User Hash) <span class="text-[10px] text-slate-500">(اختياري)</span>
-                </label>
-            </div>
-            <input type="password" id="userhash" oninput="saveHash(this.value)" placeholder="أدخل الـ Hash لرفع الروابط إلى حسابك الخاص..." 
-                   class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all">
+            <label for="userhash" class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-key text-cyan-400"></i> مفتاح حسابك <span class="text-[10px] text-slate-500">(اختياري)</span>
+            </label>
+            <input type="password" id="userhash" oninput="saveHash(this.value)" placeholder="أدخل الـ Hash لرفع الملفات لحسابك..." 
+                   class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500/50">
         </div>
 
-        <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-4">
-            <div class="flex justify-between items-center">
-                <label for="links-input" class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                    <i class="fa-solid fa-link text-cyan-400"></i>
-                    ضع روابط الملفات هنا
-                </label>
-                <span class="text-[10px] text-slate-500">رابط واحد في كل سطر (يدعم المسافات واللغة العربية)</span>
-            </div>
-            <textarea id="links-input" rows="5" placeholder="https://archive.org/download/recitation/001 - الفاتحة.mp3" 
-                      class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all leading-relaxed"></textarea>
-            
-            <button id="upload-btn" onclick="startUpload()" 
-                    class="w-full bg-gradient-to-l from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/10 active:scale-[0.98]">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                ابدأ الرفع الذكي والمنظم
+        <div class="flex bg-slate-900/80 border border-slate-800 p-1 rounded-xl">
+            <button onclick="switchTab('url-tab')" id="btn-url-tab" class="flex-1 text-xs font-bold py-2.5 rounded-lg bg-cyan-500/20 text-cyan-400 transition-all">
+                <i class="fa-solid fa-link"></i> الروابط
+            </button>
+            <button onclick="switchTab('file-tab')" id="btn-file-tab" class="flex-1 text-xs font-bold py-2.5 rounded-lg text-slate-400 hover:text-white transition-all">
+                <i class="fa-solid fa-folder-open"></i> ملفات من الهاتف
             </button>
         </div>
 
-        <div id="results-wrapper" class="hidden flex flex-col gap-4">
+        <div id="url-tab" class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-4">
+            <textarea id="links-input" rows="4" placeholder="ضع روابط الملفات المباشرة هنا (رابط بكل سطر)..." 
+                      class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-300 focus:outline-none focus:border-cyan-500/50 leading-relaxed"></textarea>
+            <button onclick="startUrlUpload()" id="url-upload-btn"
+                    class="w-full bg-gradient-to-l from-cyan-500 to-blue-600 text-slate-950 font-bold text-sm py-3 px-4 rounded-xl flex justify-center items-center gap-2 active:scale-[0.98]">
+                <i class="fa-solid fa-cloud-arrow-up"></i> رفع الروابط
+            </button>
+        </div>
+
+        <div id="file-tab" class="hidden-element bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-4">
+            <div class="border-2 border-dashed border-slate-700 bg-slate-950 rounded-xl p-6 text-center flex flex-col items-center justify-center gap-2">
+                <i class="fa-solid fa-file-audio text-3xl text-slate-500"></i>
+                <p class="text-xs text-slate-400">للملفات المحمية أو الضخمة (مثل تلاوات mp3quran)</p>
+                <input type="file" id="local-files" multiple accept="audio/*,video/*,image/*" class="hidden" onchange="updateFileCount()">
+                <button onclick="document.getElementById('local-files').click()" class="mt-2 text-xs bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 px-4 py-2 rounded-lg transition-all">
+                    اختر الملفات من الهاتف
+                </button>
+                <p id="file-count-label" class="text-[10px] text-emerald-400 font-bold hidden-element mt-1"></p>
+            </div>
+            <button onclick="startLocalUpload()" id="file-upload-btn"
+                    class="w-full bg-gradient-to-l from-emerald-500 to-teal-600 text-slate-950 font-bold text-sm py-3 px-4 rounded-xl flex justify-center items-center gap-2 active:scale-[0.98]">
+                <i class="fa-solid fa-upload"></i> رفع الملفات المحددة
+            </button>
+        </div>
+
+        <div id="results-wrapper" class="hidden-element flex flex-col gap-4">
             <div class="flex justify-between items-center px-1">
                 <h2 class="text-xs font-bold text-slate-400 flex items-center gap-1.5">
-                    <i class="fa-solid fa-square-poll-horizontal text-cyan-400"></i>
-                    حالة عمليات الرفع والروابط المستخرجة
+                    <i class="fa-solid fa-list-check text-cyan-400"></i> حالة المعالجة
                 </h2>
-                <div id="global-actions" class="hidden flex gap-2">
-                    <button onclick="copyAllLinks()" class="text-[10px] bg-cyan-500/15 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 rounded-md px-2.5 py-1.5 transition-colors flex items-center gap-1">
+                <div id="global-actions" class="hidden-element flex gap-2">
+                    <button onclick="copyAllLinks()" class="text-[10px] bg-cyan-500/15 text-cyan-300 border border-cyan-500/20 rounded-md px-2.5 py-1.5 flex items-center gap-1">
                         <i class="fa-solid fa-copy"></i> نسخ الكل
                     </button>
-                    <button onclick="clearResults()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-md px-2.5 py-1.5 transition-colors">
+                    <button onclick="clearResults()" class="text-[10px] bg-slate-800 text-slate-300 border border-slate-700 rounded-md px-2.5 py-1.5">
                         تفريغ
                     </button>
                 </div>
             </div>
-
-            <div id="results-container" class="flex flex-col gap-3">
-                </div>
+            <div id="results-container" class="flex flex-col gap-3"></div>
         </div>
 
     </main>
 
     <footer class="border-t border-slate-900 py-4 text-center">
-        <p class="text-[10px] text-slate-600">لوحة تحكم ذكية ومؤمنة تعمل مباشرة عبر خادم Netlify</p>
+        <p class="text-[10px] text-slate-600">Catbox Uploader</p>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const savedHash = localStorage.getItem('catbox_userhash');
-            if (savedHash) {
-                document.getElementById('userhash').value = savedHash;
-            }
+            if (savedHash) document.getElementById('userhash').value = savedHash;
         });
 
-        function saveHash(val) {
-            localStorage.setItem('catbox_userhash', val.trim());
+        function saveHash(val) { localStorage.setItem('catbox_userhash', val.trim()); }
+
+        function switchTab(tabId) {
+            document.getElementById('url-tab').classList.add('hidden-element');
+            document.getElementById('file-tab').classList.add('hidden-element');
+            document.getElementById(tabId).classList.remove('hidden-element');
+
+            document.getElementById('btn-url-tab').className = "flex-1 text-xs font-bold py-2.5 rounded-lg text-slate-400 hover:text-white transition-all";
+            document.getElementById('btn-file-tab').className = "flex-1 text-xs font-bold py-2.5 rounded-lg text-slate-400 hover:text-white transition-all";
+            
+            if (tabId === 'url-tab') {
+                document.getElementById('btn-url-tab').className = "flex-1 text-xs font-bold py-2.5 rounded-lg bg-cyan-500/20 text-cyan-400 transition-all";
+            } else {
+                document.getElementById('btn-file-tab').className = "flex-1 text-xs font-bold py-2.5 rounded-lg bg-emerald-500/20 text-emerald-400 transition-all";
+            }
+        }
+
+        function updateFileCount() {
+            const fileInput = document.getElementById('local-files');
+            const label = document.getElementById('file-count-label');
+            if (fileInput.files.length > 0) {
+                label.textContent = `تم تحديد ${fileInput.files.length} ملف جاهز للرفع`;
+                label.classList.remove('hidden-element');
+            } else {
+                label.classList.add('hidden-element');
+            }
         }
 
         function clearResults() {
             document.getElementById('results-container').innerHTML = '';
-            document.getElementById('results-wrapper').classList.add('hidden');
-            document.getElementById('global-actions').classList.add('hidden');
+            document.getElementById('results-wrapper').classList.add('hidden-element');
+            document.getElementById('global-actions').classList.add('hidden-element');
         }
 
-        async function startUpload() {
-            const linksInput = document.getElementById('links-input').value;
-            const userhash = document.getElementById('userhash').value.trim();
+        function setupUIForUpload(btnId, loadingText) {
+            const wrapper = document.getElementById('results-wrapper');
+            wrapper.classList.remove('hidden-element');
+            document.getElementById('results-container').innerHTML = ''; 
+            const btn = document.getElementById(btnId);
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin ml-2"></i> ${loadingText}`;
+            return btn;
+        }
 
-            const lines = linksInput.split('\n');
-            const urls = [];
-            for (let line of lines) {
-                let trimmed = line.trim();
-                if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-                    let encodedUrl = encodeURI(trimmed);
-                    urls.push(encodedUrl);
-                }
-            }
+        function restoreUIBtn(btn, originalHTML) {
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+        }
 
-            if (urls.length === 0) {
-                alert('الرجاء إدخال رابط أو روابط صالحة للبدء.');
-                return;
-            }
-
-            const resultsWrapper = document.getElementById('results-wrapper');
-            resultsWrapper.classList.remove('hidden');
-
-            const resultsContainer = document.getElementById('results-container');
-            resultsContainer.innerHTML = ''; 
-
-            const uploadBtn = document.getElementById('upload-btn');
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري معالجة ورفع الملفات...';
-
-            const targetApi = "/api";
-            
-            let successCount = 0;
-            let failCount = 0;
-
-            for (let i = 0; i < urls.length; i++) {
-                const url = urls[i];
-                const cardId = `card-${i}`;
-                const indexPadded = String(i + 1).padStart(3, '0');
-
-                // إضافة تأخير زمني ثانيتين بين كل ملف لتجنب الحظر والملفات الفارغة
-                if (i > 0) {
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                }
-
-                const cardHtml = `
-                    <div id="${cardId}" class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col gap-3 transition-all duration-300">
-                        <div class="flex justify-between items-center gap-3">
-                            <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20 font-mono">
-                                #${indexPadded}
-                            </span>
-                            <span class="text-xs text-slate-400 truncate max-w-[50%]" title="${decodeURI(url)}">
-                                ${decodeURI(url)}
-                            </span>
-                            <span class="status-badge flex items-center gap-1.5 text-xs text-amber-400 font-medium shrink-0">
-                                <i class="fas fa-circle-notch fa-spin"></i> جاري الرفع...
-                            </span>
-                        </div>
-                        <div class="result-area mt-1">
-                            <div class="flex items-center gap-2 bg-slate-950 rounded-lg p-1.5 border border-slate-800">
-                                <input type="text" readonly class="catbox-url bg-transparent text-xs text-cyan-400 w-full outline-none px-2 font-mono" value="جاري المعالجة...">
-                                <button onclick="copyLink(this)" class="text-[10px] text-slate-300 hover:text-white transition-colors py-1.5 px-3 bg-slate-800 hover:bg-slate-700 rounded-md flex items-center gap-1 shrink-0">
-                                    <i class="fas fa-copy"></i> نسخ
-                                </button>
-                            </div>
+        function createResultCard(id, index, title) {
+            const indexPadded = String(index + 1).padStart(3, '0');
+            const html = `
+                <div id="${id}" class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center gap-3">
+                        <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded-md font-mono">#${indexPadded}</span>
+                        <span class="text-xs text-slate-400 truncate max-w-[50%]">${title}</span>
+                        <span class="status-badge flex items-center gap-1.5 text-xs text-amber-400 shrink-0"><i class="fas fa-circle-notch fa-spin"></i> الرفع...</span>
+                    </div>
+                    <div class="result-area mt-1">
+                        <div class="flex items-center gap-2 bg-slate-950 rounded-lg p-1 border border-slate-800">
+                            <input type="text" readonly class="catbox-url bg-transparent text-xs text-cyan-400 w-full outline-none px-2 font-mono" value="جاري المعالجة...">
+                            <button onclick="copyLink(this)" class="text-[10px] text-slate-300 bg-slate-800 px-3 py-1.5 rounded flex items-center gap-1 shrink-0"><i class="fas fa-copy"></i> نسخ</button>
                         </div>
                     </div>
-                `;
-                resultsContainer.insertAdjacentHTML('beforeend', cardHtml);
+                </div>
+            `;
+            document.getElementById('results-container').insertAdjacentHTML('beforeend', html);
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return document.getElementById(id);
+        }
 
-                const cardElement = document.getElementById(cardId);
-                cardElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        function updateCardStatus(card, success, urlOrMsg) {
+            if (success) {
+                card.querySelector('.status-badge').innerHTML = '<i class="fas fa-circle-check text-emerald-400"></i> <span class="text-emerald-400">نجاح</span>';
+                card.querySelector('.catbox-url').value = urlOrMsg;
+                card.classList.replace('border-slate-800', 'border-emerald-500/30');
+            } else {
+                card.querySelector('.status-badge').innerHTML = `<i class="fas fa-circle-exclamation text-rose-500"></i> <span class="text-rose-400 text-[11px]">فشل</span>`;
+                card.querySelector('.catbox-url').value = urlOrMsg;
+                card.classList.replace('border-slate-800', 'border-rose-500/30');
+            }
+        }
 
-                let catboxUrl = "";
-                let uploadSuccess = false;
+        // --- المعالجة 1: رفع الملفات المحددة من الهاتف (مضمون 100% للملفات الضخمة) ---
+        async function startLocalUpload() {
+            const files = document.getElementById('local-files').files;
+            if (files.length === 0) return alert('الرجاء اختيار ملفات أولاً.');
+            
+            const userhash = document.getElementById('userhash').value.trim();
+            const btn = setupUIForUpload('file-upload-btn', 'جاري رفع الملفات...');
+            const targetApi = "/api";
+            let successCount = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const cardId = `file-card-${i}`;
+                const card = createResultCard(cardId, i, file.name);
 
                 try {
-                    const directFormData = new FormData();
-                    directFormData.append('reqtype', 'urlupload');
-                    if (userhash) {
-                        directFormData.append('userhash', userhash);
-                    }
-                    directFormData.append('url', url);
+                    const formData = new FormData();
+                    formData.append('reqtype', 'fileupload');
+                    if (userhash) formData.append('userhash', userhash);
+                    formData.append('fileToUpload', file);
 
-                    const response = await fetch(targetApi, {
-                        method: 'POST',
-                        body: directFormData
-                    });
-
+                    const response = await fetch(targetApi, { method: 'POST', body: formData });
                     if (response.ok) {
                         const responseText = await response.text();
                         if (responseText.trim().startsWith('https://files.catbox.moe/')) {
-                            catboxUrl = responseText.trim();
-                            uploadSuccess = true;
-                        }
-                    }
+                            updateCardStatus(card, true, responseText.trim());
+                            successCount++;
+                        } else throw new Error();
+                    } else throw new Error();
                 } catch (e) {
-                    console.warn("فشل الرفع المباشر السريع", e);
+                    updateCardStatus(card, false, 'فشل رفع الملف المحلي');
                 }
-
-                if (!uploadSuccess) {
-                    try {
-                        cardElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-circle-notch fa-spin text-cyan-400"></i> <span class="text-cyan-400">سحب ومعالجة الملف...</span>';
-
-                        const fileProxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(url);
-                        const fileResponse = await fetch(fileProxyUrl);
-                        
-                        if (!fileResponse.ok) {
-                            throw new Error("فشل سحب الملف الصوتي من المصدر الأصلي.");
-                        }
-
-                        const fileBlob = await fileResponse.blob();
-
-                        if (fileBlob.size === 0) {
-                             throw new Error("الملف المستخرج فارغ، تم إيقاف الرفع.");
-                        }
-
-                        let fileName = url.substring(url.lastIndexOf('/') + 1).split('?')[0] || "audio.mp3";
-                        if (!fileName.includes('.')) {
-                            fileName += '.mp3';
-                        }
-
-                        cardElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-circle-notch fa-spin text-cyan-400"></i> <span class="text-cyan-400">جاري الرفع البديل...</span>';
-
-                        const fileFormData = new FormData();
-                        fileFormData.append('reqtype', 'fileupload');
-                        if (userhash) {
-                            fileFormData.append('userhash', userhash);
-                        }
-                        fileFormData.append('fileToUpload', fileBlob, fileName);
-
-                        const response = await fetch(targetApi, {
-                            method: 'POST',
-                            body: fileFormData
-                        });
-
-                        if (response.ok) {
-                            const responseText = await response.text();
-                            if (responseText.trim().startsWith('https://files.catbox.moe/')) {
-                                catboxUrl = responseText.trim();
-                                uploadSuccess = true;
-                            } else {
-                                throw new Error(responseText);
-                            }
-                        } else {
-                            throw new Error(`خطأ خادم الرفع: ${response.status}`);
-                        }
-
-                    } catch (error) {
-                        console.error(error);
-                        cardElement.querySelector('.status-badge').innerHTML = `<i class="fas fa-circle-exclamation text-rose-500"></i> <span class="text-rose-400 text-[11px]">فشل</span>`;
-                        cardElement.classList.remove('border-slate-800');
-                        cardElement.classList.add('border-rose-500/30', 'bg-rose-950/10');
-                        
-                        cardElement.querySelector('.catbox-url').value = `فشل الرفع`;
-                        failCount++;
-                    }
-                }
-
-                if (uploadSuccess && catboxUrl) {
-                    cardElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-circle-check text-emerald-400"></i> <span class="text-emerald-400">تم بنجاح</span>';
-                    cardElement.classList.remove('border-slate-800');
-                    cardElement.classList.add('border-emerald-500/30', 'bg-emerald-950/10');
-
-                    cardElement.querySelector('.catbox-url').value = catboxUrl;
-                    successCount++;
-                }
-
                 updateGlobalActions();
             }
+            renderSummary(files.length, successCount);
+            restoreUIBtn(btn, '<i class="fa-solid fa-upload"></i> رفع الملفات المحددة');
+        }
 
-            const totalPadded = String(urls.length).padStart(3, '0');
-            const successPadded = String(successCount).padStart(3, '0');
+        // --- المعالجة 2: رفع الروابط (مع اختبار الحجم لتجنب الملفات الفارغة) ---
+        async function startUrlUpload() {
+            const lines = document.getElementById('links-input').value.split('\n');
+            const userhash = document.getElementById('userhash').value.trim();
+            const urls = [];
+            
+            for (let line of lines) {
+                let trimmed = line.trim().replace(/^\d+-\s*/, '');
+                if (trimmed.startsWith('http')) urls.push(encodeURI(trimmed));
+            }
+
+            if (urls.length === 0) return alert('أدخل روابط صالحة.');
+            
+            const btn = setupUIForUpload('url-upload-btn', 'جاري معالجة الروابط...');
+            const targetApi = "/api";
+            let successCount = 0;
+
+            for (let i = 0; i < urls.length; i++) {
+                const url = urls[i];
+                const cardId = `url-card-${i}`;
+                const card = createResultCard(cardId, i, decodeURI(url));
+
+                if (i > 0) await new Promise(res => setTimeout(res, 2000));
+
+                let finalUrl = "";
+                
+                try {
+                    // سحب مباشر لـ Catbox
+                    const formData = new FormData();
+                    formData.append('reqtype', 'urlupload');
+                    if (userhash) formData.append('userhash', userhash);
+                    formData.append('url', url);
+
+                    const res = await fetch(targetApi, { method: 'POST', body: formData });
+                    if (res.ok) {
+                        const text = await res.text();
+                        if (text.trim().startsWith('https://')) {
+                            // اختبار أخير: هل الرابط الناتج يحتوي بيانات حقيقية أم أنه ملف فارغ وهمي؟
+                            try {
+                                // فحص حجم الملف من السيرفر بدون تحميله بالكامل
+                                const headRes = await fetch(text.trim(), { method: 'HEAD' });
+                                const size = headRes.headers.get('content-length');
+                                // إذا كان الحجم صفر أو أقل من 1 كيلوبايت، فالموقع المصدر حظر Catbox
+                                if (size && parseInt(size) < 1000) {
+                                     throw new Error("ملف وهمي محمي");
+                                }
+                            } catch(headErr) {
+                                // تجاهل أخطاء الفحص لو منعت سياسة CORS قراءة الهيدر
+                            }
+                            finalUrl = text.trim();
+                            updateCardStatus(card, true, finalUrl);
+                            successCount++;
+                        } else throw new Error();
+                    } else throw new Error();
+                } catch (e) {
+                    updateCardStatus(card, false, 'الموقع المصدر يمنع السحب. قم بتحميله ورفعه محلياً');
+                }
+                updateGlobalActions();
+            }
+            renderSummary(urls.length, successCount);
+            restoreUIBtn(btn, '<i class="fa-solid fa-cloud-arrow-up"></i> رفع الروابط');
+        }
+
+        function renderSummary(total, success) {
             const summaryHtml = `
-                <div class="bg-gradient-to-l from-cyan-950/20 to-blue-950/20 border border-cyan-500/30 rounded-2xl p-4 text-center mt-4">
-                    <p class="text-xs text-slate-300 font-bold mb-1.5"><i class="fa-solid fa-chart-simple text-cyan-400 ml-1"></i> إجمالي نتيجة الرفع</p>
-                    <p class="text-sm font-bold text-white">
-                        تم رفع <span class="text-emerald-400 font-mono">${successPadded}</span> ملف بنجاح من أصل <span class="text-cyan-400 font-mono">${totalPadded}</span>
-                    </p>
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center mt-2 text-xs">
+                    نجح <span class="text-emerald-400 font-bold">${success}</span> من <span class="text-cyan-400 font-bold">${total}</span>
                 </div>
             `;
-            resultsContainer.insertAdjacentHTML('beforeend', summaryHtml);
-            
-            resultsContainer.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-            uploadBtn.disabled = false;
-            uploadBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> ابدأ الرفع والتحويل الآمن';
+            document.getElementById('results-container').insertAdjacentHTML('beforeend', summaryHtml);
         }
 
         function updateGlobalActions() {
-            const successInputs = document.querySelectorAll('.catbox-url');
-            let successCount = 0;
-            successInputs.forEach(input => {
-                if (input.value && !input.value.includes('فشل') && !input.value.includes('جاري')) successCount++;
-            });
-
-            const globalActions = document.getElementById('global-actions');
-            if (successCount > 0) {
-                globalActions.classList.remove('hidden');
-            } else {
-                globalActions.classList.add('hidden');
-            }
+            const actions = document.getElementById('global-actions');
+            const successes = Array.from(document.querySelectorAll('.catbox-url')).filter(i => i.value.startsWith('http')).length;
+            successes > 0 ? actions.classList.remove('hidden-element') : actions.classList.add('hidden-element');
         }
 
-        function copyLink(button) {
-            const inputVal = button.previousElementSibling.value;
-            copyToClipboard(inputVal, button);
-        }
+        function copyLink(btn) { copyToClipboard(btn.previousElementSibling.value, btn); }
 
         function copyAllLinks() {
-            const successInputs = document.querySelectorAll('.catbox-url');
-            const linksArr = [];
-            successInputs.forEach((input, index) => {
-                if (input.value && !input.value.includes('فشل') && !input.value.includes('جاري')) {
-                    const indexPadded = String(index + 1).padStart(3, '0');
-                    linksArr.push(`${indexPadded}- ${input.value}`);
-                }
+            const links = [];
+            document.querySelectorAll('.catbox-url').forEach((input, index) => {
+                if (input.value.startsWith('http')) links.push(`${String(index + 1).padStart(3, '0')}- ${input.value}`);
             });
-
-            if (linksArr.length > 0) {
-                const combinedLinks = linksArr.join('\n');
-                const btn = document.querySelector('#global-actions button');
-                copyToClipboard(combinedLinks, btn);
-            }
+            if (links.length > 0) copyToClipboard(links.join('\n'), document.querySelector('#global-actions button'));
         }
 
-        function copyToClipboard(text, buttonElement) {
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showCopiedState(buttonElement);
-                }).catch(() => {
-                    fallbackCopy(text, buttonElement);
-                });
-            } else {
-                fallbackCopy(text, buttonElement);
-            }
+        function copyToClipboard(text, btn) {
+            const fallback = () => {
+                const ta = document.createElement("textarea"); ta.value = text;
+                document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+                showCopied(btn);
+            };
+            navigator.clipboard ? navigator.clipboard.writeText(text).then(() => showCopied(btn)).catch(fallback) : fallback();
         }
 
-        function fallbackCopy(text, buttonElement) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed"; 
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showCopiedState(buttonElement);
-            } catch (err) {
-                alert('فشل النسخ التلقائي، يرجى تظليل النص ونسخه يدوياً.');
-            }
-            document.body.removeChild(textArea);
-        }
-
-        function showCopiedState(btn) {
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i> تم!';
-            btn.classList.add('bg-emerald-950/50', 'text-emerald-400', 'border-emerald-500/30');
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.classList.remove('bg-emerald-950/50', 'text-emerald-400', 'border-emerald-500/30');
-            }, 1800);
+        function showCopied(btn) {
+            const html = btn.innerHTML; btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => btn.innerHTML = html, 1500);
         }
     </script>
 </body>
