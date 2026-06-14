@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم رافع الروابط لـ Catbox (إصدار Netlify)</title>
+    <title>لوحة تحكم رافع الروابط لـ Catbox (إصدار منظم بالترقيم)</title>
     <!-- تضمين Tailwind CSS للتصميم -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- مكتبة الأيقونات FontAwesome -->
@@ -28,8 +28,8 @@
                     <i class="fa-solid fa-cat text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-base text-white">مرفاع Catbox السحابي</h1>
-                    <p class="text-xs text-slate-400">لوحة تحكم مستقلة ومستقرة على Netlify</p>
+                    <h1 class="font-bold text-base text-white">مرفاع Catbox المرقم</h1>
+                    <p class="text-xs text-slate-400">لوحة تحكم مستقلة ومستقرة مع فهرسة مرقمة</p>
                 </div>
             </div>
             <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-md border border-emerald-500/20">آمن ومستقر</span>
@@ -143,26 +143,32 @@
             uploadBtn.disabled = true;
             uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري الرفع والتحويل...';
 
-            // الإشارة للمسار المحلي /api الذي سيقوم Netlify بتمريره تلقائياً بسلاسة وبدون CORS
             const targetApi = "/api";
+            
+            let successCount = 0;
+            let failCount = 0;
 
             for (let i = 0; i < urls.length; i++) {
                 const url = urls[i];
                 const cardId = `card-${i}`;
+                const indexPadded = String(i + 1).padStart(3, '0'); // توليد رقم متسلسل مثل 001، 002
 
                 const cardHtml = `
                     <div id="${cardId}" class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col gap-3 transition-all duration-300">
                         <div class="flex justify-between items-center gap-3">
-                            <span class="text-xs text-slate-400 truncate max-w-[65%]" title="${url}">
+                            <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20 font-mono">
+                                #${indexPadded}
+                            </span>
+                            <span class="text-xs text-slate-400 truncate max-w-[50%]" title="${url}">
                                 ${url}
                             </span>
                             <span class="status-badge flex items-center gap-1.5 text-xs text-amber-400 font-medium shrink-0">
                                 <i class="fas fa-circle-notch fa-spin"></i> جاري الرفع...
                             </span>
                         </div>
-                        <div class="result-area hidden mt-1">
+                        <div class="result-area mt-1">
                             <div class="flex items-center gap-2 bg-slate-950 rounded-lg p-1.5 border border-slate-800">
-                                <input type="text" readonly class="catbox-url bg-transparent text-xs text-cyan-400 w-full outline-none px-2 font-mono" value="">
+                                <input type="text" readonly class="catbox-url bg-transparent text-xs text-cyan-400 w-full outline-none px-2 font-mono" value="${indexPadded}- جاري المعالجة...">
                                 <button onclick="copyLink(this)" class="text-[10px] text-slate-300 hover:text-white transition-colors py-1.5 px-3 bg-slate-800 hover:bg-slate-700 rounded-md flex items-center gap-1 shrink-0">
                                     <i class="fas fa-copy"></i> نسخ
                                 </button>
@@ -189,7 +195,7 @@
                     });
 
                     if (!response.ok) {
-                        throw new Error(`خطأ في الرد: ${response.status}`);
+                        throw new Error(`خطأ: ${response.status}`);
                     }
 
                     const responseText = await response.text();
@@ -200,22 +206,42 @@
                         cardElement.classList.remove('border-slate-800');
                         cardElement.classList.add('border-emerald-500/30', 'bg-emerald-950/10');
 
-                        const resultArea = cardElement.querySelector('.result-area');
-                        resultArea.classList.remove('hidden');
-                        resultArea.querySelector('.catbox-url').value = catboxUrl;
+                        // حفظ الرابط بالرقم المتسلسل المطلوب
+                        cardElement.querySelector('.catbox-url').value = `${indexPadded}- ${catboxUrl}`;
+                        successCount++;
                     } else {
                         throw new Error(responseText);
                     }
 
                 } catch (error) {
                     console.error(error);
-                    cardElement.querySelector('.status-badge').innerHTML = `<i class="fas fa-circle-exclamation text-rose-500"></i> <span class="text-rose-400 text-[11px]">فشل: ${error.message}</span>`;
+                    cardElement.querySelector('.status-badge').innerHTML = `<i class="fas fa-circle-exclamation text-rose-500"></i> <span class="text-rose-400 text-[11px]">فشل</span>`;
                     cardElement.classList.remove('border-slate-800');
                     cardElement.classList.add('border-rose-500/30', 'bg-rose-950/10');
+                    
+                    // حفظ الفشل بالرقم المتسلسل المطلوب
+                    cardElement.querySelector('.catbox-url').value = `${indexPadded}- فشل`;
+                    failCount++;
                 }
 
                 updateGlobalActions();
             }
+
+            // توليد كرت الإجمالي والتقرير النهائي في أسفل القائمة
+            const totalPadded = String(urls.length).padStart(3, '0');
+            const successPadded = String(successCount).padStart(3, '0');
+            const summaryHtml = `
+                <div class="bg-gradient-to-l from-cyan-950/20 to-blue-950/20 border border-cyan-500/30 rounded-2xl p-4 text-center mt-4">
+                    <p class="text-xs text-slate-300 font-bold mb-1.5"><i class="fa-solid fa-chart-simple text-cyan-400 ml-1"></i> إجمالي نتيجة الرفع</p>
+                    <p class="text-sm font-bold text-white">
+                        تم رفع <span class="text-emerald-400 font-mono">${successPadded}</span> ملف بنجاح من أصل <span class="text-cyan-400 font-mono">${totalPadded}</span>
+                    </p>
+                </div>
+            `;
+            resultsContainer.insertAdjacentHTML('beforeend', summaryHtml);
+            
+            // تمرير تلقائي لرؤية التقرير النهائي
+            resultsContainer.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
             uploadBtn.disabled = false;
             uploadBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> ابدأ الرفع السريع';
