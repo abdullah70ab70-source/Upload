@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم رافع الروابط لـ Catbox (إصدار منظم بالترقيم)</title>
-    <!-- تضمين Tailwind CSS للتصميم -->
+    <title>لوحة تحكم رافع الروابط لـ Catbox (الإصدار الاحترافي الكامل)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- مكتبة الأيقونات FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- خط تجول العربي من جوجل -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -20,7 +17,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-slate-950">
 
-    <!-- رأس لوحة التحكم -->
     <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-lg mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -28,18 +24,16 @@
                     <i class="fa-solid fa-cat text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-base text-white">مرفاع Catbox المرقم</h1>
-                    <p class="text-xs text-slate-400">لوحة تحكم مستقلة ومستقرة مع فهرسة مرقمة</p>
+                    <h1 class="font-bold text-base text-white">مرفاع Catbox الفعّال</h1>
+                    <p class="text-xs text-slate-400">لوحة تحكم ذكية تدعم المسافات والحروف العربية بأمان</p>
                 </div>
             </div>
-            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-md border border-emerald-500/20">آمن ومستقر</span>
+            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-md border border-emerald-500/20 font-bold">النسخة النهائية</span>
         </div>
     </header>
 
-    <!-- محتوى لوحة التحكم الرئيسي -->
     <main class="flex-grow max-w-lg w-full mx-auto px-4 py-6 flex flex-col gap-6">
 
-        <!-- حقل معرف المستخدم الاختياري (User Hash) -->
         <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-3">
             <div class="flex justify-between items-center">
                 <label for="userhash" class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
@@ -51,33 +45,30 @@
                    class="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all">
         </div>
 
-        <!-- صندوق الروابط المراد رفعها -->
         <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-4">
             <div class="flex justify-between items-center">
                 <label for="links-input" class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
                     <i class="fa-solid fa-link text-cyan-400"></i>
                     ضع روابط الملفات هنا
                 </label>
-                <span class="text-[10px] text-slate-500">رابط واحد في كل سطر</span>
+                <span class="text-[10px] text-slate-500">رابط واحد في كل سطر (يدعم المسافات واللغة العربية)</span>
             </div>
-            <textarea id="links-input" rows="5" placeholder="https://www.el-hosary.com/Elmojawed/100.mp3" 
+            <textarea id="links-input" rows="5" placeholder="https://archive.org/download/recitation/001 - الفاتحة.mp3" 
                       class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all leading-relaxed"></textarea>
             
             <button id="upload-btn" onclick="startUpload()" 
                     class="w-full bg-gradient-to-l from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/10 active:scale-[0.98]">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                ابدأ الرفع السريع
+                ابدأ الرفع الذكي والمنظم
             </button>
         </div>
 
-        <!-- قسم عرض النتائج تدريجياً -->
         <div id="results-wrapper" class="hidden flex flex-col gap-4">
             <div class="flex justify-between items-center px-1">
                 <h2 class="text-xs font-bold text-slate-400 flex items-center gap-1.5">
                     <i class="fa-solid fa-square-poll-horizontal text-cyan-400"></i>
                     حالة عمليات الرفع والروابط المستخرجة
                 </h2>
-                <!-- الأزرار العامة للنتائج -->
                 <div id="global-actions" class="hidden flex gap-2">
                     <button onclick="copyAllLinks()" class="text-[10px] bg-cyan-500/15 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 rounded-md px-2.5 py-1.5 transition-colors flex items-center gap-1">
                         <i class="fa-solid fa-copy"></i> نسخ الكل
@@ -88,22 +79,17 @@
                 </div>
             </div>
 
-            <!-- حاوية الكروت لكل رابط مرفوع -->
             <div id="results-container" class="flex flex-col gap-3">
-                <!-- الكروت ستظهر هنا بشكل ديناميكي -->
-            </div>
+                </div>
         </div>
 
     </main>
 
-    <!-- تذييل الصفحة -->
     <footer class="border-t border-slate-900 py-4 text-center">
-        <p class="text-[10px] text-slate-600">لوحة تحكم خفيفة تعمل مباشرة عبر خادم Netlify</p>
+        <p class="text-[10px] text-slate-600">لوحة تحكم ذكية ومؤمنة تعمل مباشرة عبر خادم Netlify</p>
     </footer>
 
-    <!-- سكربت التشغيل ومعالجة الرفع والروابط -->
     <script>
-        // تحميل الـ hash تلقائياً عند فتح الصفحة إذا تم حفظه مسبقاً
         document.addEventListener('DOMContentLoaded', () => {
             const savedHash = localStorage.getItem('catbox_userhash');
             if (savedHash) {
@@ -125,8 +111,15 @@
             const linksInput = document.getElementById('links-input').value;
             const userhash = document.getElementById('userhash').value.trim();
 
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const urls = linksInput.match(urlRegex) || [];
+            const lines = linksInput.split('\n');
+            const urls = [];
+            for (let line of lines) {
+                let trimmed = line.trim();
+                if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+                    let encodedUrl = encodeURI(trimmed);
+                    urls.push(encodedUrl);
+                }
+            }
 
             if (urls.length === 0) {
                 alert('الرجاء إدخال رابط أو روابط صالحة للبدء.');
@@ -141,7 +134,7 @@
 
             const uploadBtn = document.getElementById('upload-btn');
             uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري الرفع والتحويل...';
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري معالجة ورفع الملفات...';
 
             const targetApi = "/api";
             
@@ -151,7 +144,12 @@
             for (let i = 0; i < urls.length; i++) {
                 const url = urls[i];
                 const cardId = `card-${i}`;
-                const indexPadded = String(i + 1).padStart(3, '0'); // توليد رقم متسلسل مثل 001، 002
+                const indexPadded = String(i + 1).padStart(3, '0');
+
+                // إضافة تأخير زمني ثانيتين بين كل ملف لتجنب الحظر والملفات الفارغة
+                if (i > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
 
                 const cardHtml = `
                     <div id="${cardId}" class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col gap-3 transition-all duration-300">
@@ -159,8 +157,8 @@
                             <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20 font-mono">
                                 #${indexPadded}
                             </span>
-                            <span class="text-xs text-slate-400 truncate max-w-[50%]" title="${url}">
-                                ${url}
+                            <span class="text-xs text-slate-400 truncate max-w-[50%]" title="${decodeURI(url)}">
+                                ${decodeURI(url)}
                             </span>
                             <span class="status-badge flex items-center gap-1.5 text-xs text-amber-400 font-medium shrink-0">
                                 <i class="fas fa-circle-notch fa-spin"></i> جاري الرفع...
@@ -168,7 +166,7 @@
                         </div>
                         <div class="result-area mt-1">
                             <div class="flex items-center gap-2 bg-slate-950 rounded-lg p-1.5 border border-slate-800">
-                                <input type="text" readonly class="catbox-url bg-transparent text-xs text-cyan-400 w-full outline-none px-2 font-mono" value="${indexPadded}- جاري المعالجة...">
+                                <input type="text" readonly class="catbox-url bg-transparent text-xs text-cyan-400 w-full outline-none px-2 font-mono" value="جاري المعالجة...">
                                 <button onclick="copyLink(this)" class="text-[10px] text-slate-300 hover:text-white transition-colors py-1.5 px-3 bg-slate-800 hover:bg-slate-700 rounded-md flex items-center gap-1 shrink-0">
                                     <i class="fas fa-copy"></i> نسخ
                                 </button>
@@ -181,53 +179,104 @@
                 const cardElement = document.getElementById(cardId);
                 cardElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-                const formData = new FormData();
-                formData.append('reqtype', 'urlupload');
-                if (userhash) {
-                    formData.append('userhash', userhash);
-                }
-                formData.append('url', url);
+                let catboxUrl = "";
+                let uploadSuccess = false;
 
                 try {
+                    const directFormData = new FormData();
+                    directFormData.append('reqtype', 'urlupload');
+                    if (userhash) {
+                        directFormData.append('userhash', userhash);
+                    }
+                    directFormData.append('url', url);
+
                     const response = await fetch(targetApi, {
                         method: 'POST',
-                        body: formData
+                        body: directFormData
                     });
 
-                    if (!response.ok) {
-                        throw new Error(`خطأ: ${response.status}`);
+                    if (response.ok) {
+                        const responseText = await response.text();
+                        if (responseText.trim().startsWith('https://files.catbox.moe/')) {
+                            catboxUrl = responseText.trim();
+                            uploadSuccess = true;
+                        }
                     }
+                } catch (e) {
+                    console.warn("فشل الرفع المباشر السريع", e);
+                }
 
-                    const responseText = await response.text();
+                if (!uploadSuccess) {
+                    try {
+                        cardElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-circle-notch fa-spin text-cyan-400"></i> <span class="text-cyan-400">سحب ومعالجة الملف...</span>';
 
-                    if (responseText.trim().startsWith('https://files.catbox.moe/')) {
-                        const catboxUrl = responseText.trim();
-                        cardElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-circle-check text-emerald-400"></i> <span class="text-emerald-400">تم بنجاح</span>';
+                        const fileProxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(url);
+                        const fileResponse = await fetch(fileProxyUrl);
+                        
+                        if (!fileResponse.ok) {
+                            throw new Error("فشل سحب الملف الصوتي من المصدر الأصلي.");
+                        }
+
+                        const fileBlob = await fileResponse.blob();
+
+                        if (fileBlob.size === 0) {
+                             throw new Error("الملف المستخرج فارغ، تم إيقاف الرفع.");
+                        }
+
+                        let fileName = url.substring(url.lastIndexOf('/') + 1).split('?')[0] || "audio.mp3";
+                        if (!fileName.includes('.')) {
+                            fileName += '.mp3';
+                        }
+
+                        cardElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-circle-notch fa-spin text-cyan-400"></i> <span class="text-cyan-400">جاري الرفع البديل...</span>';
+
+                        const fileFormData = new FormData();
+                        fileFormData.append('reqtype', 'fileupload');
+                        if (userhash) {
+                            fileFormData.append('userhash', userhash);
+                        }
+                        fileFormData.append('fileToUpload', fileBlob, fileName);
+
+                        const response = await fetch(targetApi, {
+                            method: 'POST',
+                            body: fileFormData
+                        });
+
+                        if (response.ok) {
+                            const responseText = await response.text();
+                            if (responseText.trim().startsWith('https://files.catbox.moe/')) {
+                                catboxUrl = responseText.trim();
+                                uploadSuccess = true;
+                            } else {
+                                throw new Error(responseText);
+                            }
+                        } else {
+                            throw new Error(`خطأ خادم الرفع: ${response.status}`);
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        cardElement.querySelector('.status-badge').innerHTML = `<i class="fas fa-circle-exclamation text-rose-500"></i> <span class="text-rose-400 text-[11px]">فشل</span>`;
                         cardElement.classList.remove('border-slate-800');
-                        cardElement.classList.add('border-emerald-500/30', 'bg-emerald-950/10');
-
-                        // حفظ الرابط بالرقم المتسلسل المطلوب
-                        cardElement.querySelector('.catbox-url').value = `${indexPadded}- ${catboxUrl}`;
-                        successCount++;
-                    } else {
-                        throw new Error(responseText);
+                        cardElement.classList.add('border-rose-500/30', 'bg-rose-950/10');
+                        
+                        cardElement.querySelector('.catbox-url').value = `فشل الرفع`;
+                        failCount++;
                     }
+                }
 
-                } catch (error) {
-                    console.error(error);
-                    cardElement.querySelector('.status-badge').innerHTML = `<i class="fas fa-circle-exclamation text-rose-500"></i> <span class="text-rose-400 text-[11px]">فشل</span>`;
+                if (uploadSuccess && catboxUrl) {
+                    cardElement.querySelector('.status-badge').innerHTML = '<i class="fas fa-circle-check text-emerald-400"></i> <span class="text-emerald-400">تم بنجاح</span>';
                     cardElement.classList.remove('border-slate-800');
-                    cardElement.classList.add('border-rose-500/30', 'bg-rose-950/10');
-                    
-                    // حفظ الفشل بالرقم المتسلسل المطلوب
-                    cardElement.querySelector('.catbox-url').value = `${indexPadded}- فشل`;
-                    failCount++;
+                    cardElement.classList.add('border-emerald-500/30', 'bg-emerald-950/10');
+
+                    cardElement.querySelector('.catbox-url').value = catboxUrl;
+                    successCount++;
                 }
 
                 updateGlobalActions();
             }
 
-            // توليد كرت الإجمالي والتقرير النهائي في أسفل القائمة
             const totalPadded = String(urls.length).padStart(3, '0');
             const successPadded = String(successCount).padStart(3, '0');
             const summaryHtml = `
@@ -240,18 +289,17 @@
             `;
             resultsContainer.insertAdjacentHTML('beforeend', summaryHtml);
             
-            // تمرير تلقائي لرؤية التقرير النهائي
             resultsContainer.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
             uploadBtn.disabled = false;
-            uploadBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> ابدأ الرفع السريع';
+            uploadBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> ابدأ الرفع والتحويل الآمن';
         }
 
         function updateGlobalActions() {
             const successInputs = document.querySelectorAll('.catbox-url');
             let successCount = 0;
             successInputs.forEach(input => {
-                if (input.value) successCount++;
+                if (input.value && !input.value.includes('فشل') && !input.value.includes('جاري')) successCount++;
             });
 
             const globalActions = document.getElementById('global-actions');
@@ -270,8 +318,11 @@
         function copyAllLinks() {
             const successInputs = document.querySelectorAll('.catbox-url');
             const linksArr = [];
-            successInputs.forEach(input => {
-                if (input.value) linksArr.push(input.value);
+            successInputs.forEach((input, index) => {
+                if (input.value && !input.value.includes('فشل') && !input.value.includes('جاري')) {
+                    const indexPadded = String(index + 1).padStart(3, '0');
+                    linksArr.push(`${indexPadded}- ${input.value}`);
+                }
             });
 
             if (linksArr.length > 0) {
