@@ -215,7 +215,7 @@
         .active-row .play-cell { background: var(--accent-gold); color: #fff; border-color: var(--accent-gold); box-shadow: 0 4px 10px rgba(197, 160, 89, 0.3); }
 
         .icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
-        .floating-player .icon-btn { color: rgba(255, 255, 255, 0.85); }
+        .floating-player .icon-btn { color: #c5a059; }
         .floating-player .icon-btn:hover { color: #fff; }
         .icon-btn.active-feature { color: var(--accent-gold) !important; }
 
@@ -233,25 +233,28 @@
             transform: translateX(-50%); 
             width: 92%; 
             max-width: 440px; 
-            background: linear-gradient(135deg, #c5a059 0%, #b38f4d 100%);
+            background: #2c3e50;
             backdrop-filter: blur(20px); 
             border-radius: 16px; 
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #c5a059;
             padding: 10px 15px; 
-            box-shadow: 0 12px 35px rgba(197, 160, 89, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 35px rgba(197, 160, 89, 0.4);
             display: none; 
             z-index: 1000;
+            color: #fff;
         }
         body.dark-theme .floating-player {
-            background: linear-gradient(135deg, #8b6f47 0%, #6d5a3d 100%);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            background: #1a1a1a;
+            border-color: #c5a059;
+            box-shadow: 0 12px 35px rgba(197, 160, 89, 0.3);
         }
         .player-seekbar-container { width: 100%; height: 12px; display: flex; align-items: center; cursor: pointer; direction: ltr; margin-bottom: 2px; touch-action: none; }
-        .player-seekbar-track { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.25); border-radius: 10px; position: relative; }
-        .player-seekbar-fill { height: 100%; background: rgba(255, 255, 255, 0.8); width: 0%; border-radius: 10px; pointer-events: none; }
+        .player-seekbar-track { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; position: relative; }
+        .player-seekbar-fill { height: 100%; background: #c5a059; width: 0%; border-radius: 10px; pointer-events: none; }
         .player-seekbar-thumb { position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
-        .play-toggle-btn { background: #fff; color: #c5a059; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); font-weight: 700; }
-        body.dark-theme .play-toggle-btn { color: #8b6f47; }
+        .play-toggle-btn { background: #c5a059; color: #fff; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(197, 160, 89, 0.4); font-weight: 700; transition: all 0.3s ease; }
+        .play-toggle-btn:hover { background: #b38f4d; box-shadow: 0 6px 15px rgba(197, 160, 89, 0.5); }
+        body.dark-theme .play-toggle-btn { background: #c5a059; }
         .play-toggle-btn svg { width: 16px !important; height: 16px !important; }
         .icon-btn svg { width: 20px; height: 20px; }
 
@@ -335,6 +338,7 @@
             color: var(--accent-gold);
             background-color: var(--glass-active);
             font-weight: 700;
+            transition: none !important;
         }
     </style>
 </head>
@@ -437,7 +441,7 @@
                     <button class="icon-btn" onclick="playPrevious()" title="السابق">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
                     </button>
-                    <button class="play-toggle-btn" id="player-play-btn" onclick="togglePlayPause()"></button>
+                    <button class="play-toggle-btn" id="player-play-btn" onclick="togglePlayPauseWithFocus()"></button>
                     <button class="icon-btn" onclick="playNext()" title="التالي">
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                     </button>
@@ -672,6 +676,21 @@
                 const verseData = timings.find(v => v.id === verseNumber);
                 if (verseData && verseData.start_time !== undefined) {
                     audioInstance.currentTime = verseData.start_time;
+                    
+                    // تحديث التظليل فوراً
+                    const activeVerseId = `verse-${surahId}-${verseNumber}`;
+                    if (currentActiveVerse && currentActiveVerse !== activeVerseId) {
+                        const prevEl = document.getElementById(currentActiveVerse);
+                        if (prevEl) prevEl.classList.remove('active-verse');
+                    }
+                    const currentEl = document.getElementById(activeVerseId);
+                    if (currentEl) {
+                        currentEl.classList.add('active-verse');
+                        currentActiveVerse = activeVerseId;
+                        // التمرير الفوري للآية
+                        currentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
                     if (audioInstance.paused) {
                         togglePlayPause();
                     }
@@ -1013,6 +1032,13 @@
                 audioInstance.play().catch(e => { console.log("Audio Play Error:", e); isBuffering = false; syncUIWithAudioState(); });
             } else { audioInstance.pause(); }
         }
+        
+        function togglePlayPauseWithFocus() {
+            togglePlayPause();
+            if (!isFocusMode && !audioInstance.paused) {
+                toggleFocusMode(true);
+            }
+        }
         function playNext() { const idx = activeSurahsData.findIndex(s => s.id === playingSurahId); if (idx < activeSurahsData.length - 1) { const next = activeSurahsData[idx + 1]; playSurah(next.id, next.url); } }
         function playPrevious() { const idx = activeSurahsData.findIndex(s => s.id === playingSurahId); if (idx > 0) { const prev = activeSurahsData[idx - 1]; playSurah(prev.id, prev.url); } }
 
@@ -1072,6 +1098,8 @@
                                 
                                 targetScroll = currentEl.offsetTop - (window.innerHeight / 2) + (currentEl.offsetHeight / 2);
                                 targetScroll = Math.max(0, targetScroll);
+                                currentScroll = targetScroll;
+                                window.scrollTo(0, targetScroll);
                             }
                         }
                     } else {
