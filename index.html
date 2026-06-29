@@ -103,34 +103,103 @@
         .edition-list-wrapper { width: 100%; }
         .edition-list { display: flex; gap: 8px; overflow-x: auto; padding: 2px 5px 5px 5px; scrollbar-width: none; }
         .edition-list::-webkit-scrollbar { display: none; }
-        .edition-pill { 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            gap: 4px; 
-            background: var(--bg-mid); 
-            border: 1px solid var(--glass-border); 
-            padding: 10px 15px; 
-            border-radius: 15px; 
-            font-size: 0.75rem; 
-            font-weight: 700; 
-            color: var(--text-muted); 
-            cursor: pointer; 
-            white-space: nowrap; 
+        .edition-dropdown-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--bg-mid);
+            border: 1px solid var(--glass-border);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
             box-shadow: 0 4px 12px var(--shadow-intensity);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            min-width: 100px;
+            width: 100%;
         }
-        .edition-pill:hover { transform: translateY(-3px); border-color: var(--accent-gold); }
-        .edition-pill.active { 
-            background: var(--accent-gold); 
-            color: #fff; 
-            border-color: var(--accent-gold); 
-            box-shadow: 0 6px 15px rgba(197, 160, 89, 0.4);
+        .edition-dropdown-btn:hover {
+            border-color: var(--accent-gold);
+            box-shadow: 0 6px 15px rgba(197, 160, 89, 0.2);
         }
-        .edition-pill .edition-type { font-size: 0.6rem; opacity: 0.8; font-weight: 400; }
-        .edition-pill.active .edition-type { color: #fff; }
+        .edition-dropdown-btn.active {
+            background: var(--glass-active);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+        .edition-dropdown-btn svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+        .edition-dropdown-btn.open svg {
+            transform: rotate(180deg);
+        }
+        
+        .edition-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            left: 0;
+            background: var(--bg-mid);
+            border: 1px solid var(--glass-border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            box-shadow: 0 8px 20px var(--shadow-intensity);
+            z-index: 100;
+        }
+        .edition-dropdown-menu.show {
+            max-height: 400px;
+            opacity: 1;
+            pointer-events: auto;
+            overflow-y: auto;
+        }
+        .edition-dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        .edition-dropdown-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .edition-dropdown-menu::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 3px;
+        }
+        .edition-dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+        .edition-menu-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.85rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .edition-menu-item:hover {
+            background: var(--glass-active);
+            color: var(--accent-gold);
+        }
+        .edition-menu-item.active {
+            background: var(--glass-active);
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+        .edition-menu-item.active::before {
+            content: '✓';
+            color: var(--accent-gold);
+            font-weight: 700;
+            margin-left: 8px;
+        }
         @keyframes flash-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.4); } }
         .active-dot { display: inline-block; width: 6px; height: 6px; background: var(--accent-gold); border-radius: 50%; animation: flash-dot 1.5s infinite ease-in-out; flex-shrink: 0; }
 
@@ -400,12 +469,27 @@
         const recitersList = [ { id: "maasarawi", nameAr: "أحمد عيسى المعصراوي", nameEn: "Ahmed Issa Al-Maasarawi", image: "maasarawi.jpg" } ];
         const editionsConfig = { 
             "maasarawi": { 
-                1: { pillAr: "حفص عن عاصم", pillEn: "Hafs A'n Asim", file: "maasarawi_1.json", descAr: "المصحف المرتل", descEn: "Murattal" },
-                2: { pillAr: "ورش عن نافع", pillEn: "Warsh A'n Nafi'", file: "maasarawi_1.json", descAr: "رواية ورش عن نافع", descEn: "Warsh" },
-                3: { pillAr: "قالون عن نافع", pillEn: "Qalun A'n Nafi'", file: "maasarawi_1.json", descAr: "رواية قالون عن نافع", descEn: "Qalun" },
-                4: { pillAr: "الدوري عن أبي عمرو", pillEn: "Al-Duri A'n Abu Amr", file: "maasarawi_1.json", descAr: "رواية الدوري عن أبي عمرو", descEn: "Al-Duri" },
-                5: { pillAr: "شعبة عن عاصم", pillEn: "Shu'bah A'n Asim", file: "maasarawi_1.json", descAr: "رواية شعبة عن عاصم", descEn: "Shu'bah" },
-                6: { pillAr: "خلف عن حمزة", pillEn: "Khalaf A'n Hamzah", file: "maasarawi_1.json", descAr: "رواية خلف عن حمزة", descEn: "Khalaf" }
+                1: { pillAr: "حفص عن عاصم", pillEn: "Hafs A'n Asim", file: "maasarawi_1.json", descAr: "حفص عن عاصم", descEn: "Hafs A'n Asim" },
+                2: { pillAr: "ورش عن نافع", pillEn: "Warsh A'n Nafi'", file: "maasarawi_2.json", descAr: "ورش عن نافع", descEn: "Warsh A'n Nafi'" },
+                3: { pillAr: "قالون عن نافع", pillEn: "Qalun A'n Nafi'", file: "maasarawi_3.json", descAr: "قالون عن نافع", descEn: "Qalun A'n Nafi'" },
+                4: { pillAr: "الدوري عن أبي عمرو", pillEn: "Al-Duri A'n Abu Amr", file: "maasarawi_4.json", descAr: "الدوري عن أبي عمرو", descEn: "Al-Duri A'n Abu Amr" },
+                5: { pillAr: "شعبة عن عاصم", pillEn: "Shu'bah A'n Asim", file: "maasarawi_5.json", descAr: "شعبة عن عاصم", descEn: "Shu'bah A'n Asim" },
+                6: { pillAr: "خلف عن حمزة", pillEn: "Khalaf A'n Hamzah", file: "maasarawi_6.json", descAr: "خلف عن حمزة", descEn: "Khalaf A'n Hamzah" },
+                7: { pillAr: "خلاد عن حمزة", pillEn: "Khalad A'n Hamzah", file: "maasarawi_7.json", descAr: "خلاد عن حمزة", descEn: "Khalad A'n Hamzah" },
+                8: { pillAr: "البزي عن ابن كثير", pillEn: "Al-Bazzi A'n Ibn Kathir", file: "maasarawi_8.json", descAr: "البزي عن ابن كثير", descEn: "Al-Bazzi A'n Ibn Kathir" },
+                9: { pillAr: "قنبل عن ابن كثير", pillEn: "Qunbul A'n Ibn Kathir", file: "maasarawi_9.json", descAr: "قنبل عن ابن كثير", descEn: "Qunbul A'n Ibn Kathir" },
+                10: { pillAr: "السوسي عن أبي عمرو", pillEn: "Al-Susi A'n Abu Amr", file: "maasarawi_10.json", descAr: "السوسي عن أبي عمرو", descEn: "Al-Susi A'n Abu Amr" },
+                11: { pillAr: "هشام عن ابن عامر", pillEn: "Hisham A'n Ibn Amer", file: "maasarawi_11.json", descAr: "هشام عن ابن عامر", descEn: "Hisham A'n Ibn Amer" },
+                12: { pillAr: "ابن ذكوان عن ابن عامر", pillEn: "Ibn Dhakwan A'n Ibn Amer", file: "maasarawi_12.json", descAr: "ابن ذكوان عن ابن عامر", descEn: "Ibn Dhakwan A'n Ibn Amer" },
+                13: { pillAr: "الكسائي عن علي", pillEn: "Al-Kisa'i A'n Ali", file: "maasarawi_13.json", descAr: "الكسائي عن علي", descEn: "Al-Kisa'i A'n Ali" },
+                14: { pillAr: "الليث عن الكسائي", pillEn: "Al-Layth A'n Al-Kisa'i", file: "maasarawi_14.json", descAr: "الليث عن الكسائي", descEn: "Al-Layth A'n Al-Kisa'i" },
+                15: { pillAr: "أبو الحارث عن الكسائي", pillEn: "Abu Al-Harith A'n Al-Kisa'i", file: "maasarawi_15.json", descAr: "أبو الحارث عن الكسائي", descEn: "Abu Al-Harith A'n Al-Kisa'i" },
+                16: { pillAr: "حفص الدغام عن عاصم", pillEn: "Hafs Al-Dughham A'n Asim", file: "maasarawi_16.json", descAr: "حفص الدغام عن عاصم", descEn: "Hafs Al-Dughham A'n Asim" },
+                17: { pillAr: "رويس عن يعقوب", pillEn: "Ruwais A'n Ya'qub", file: "maasarawi_17.json", descAr: "رويس عن يعقوب", descEn: "Ruwais A'n Ya'qub" },
+                18: { pillAr: "روح عن يعقوب", pillEn: "Rawh A'n Ya'qub", file: "maasarawi_18.json", descAr: "روح عن يعقوب", descEn: "Rawh A'n Ya'qub" },
+                19: { pillAr: "ورقاء عن نافع", pillEn: "Warqa A'n Nafi'", file: "maasarawi_19.json", descAr: "ورقاء عن نافع", descEn: "Warqa A'n Nafi'" },
+                20: { pillAr: "إسماعيل عن نافع", pillEn: "Ismail A'n Nafi'", file: "maasarawi_20.json", descAr: "إسماعيل عن نافع", descEn: "Ismail A'n Nafi'" },
+                21: { pillAr: "الأزرق عن نافع", pillEn: "Al-Azraq A'n Nafi'", file: "maasarawi_21.json", descAr: "الأزرق عن نافع", descEn: "Al-Azraq A'n Nafi'" }
             } 
         };
 
@@ -762,34 +846,80 @@
             }
         }
 
+        let editionDropdownOpen = false;
+        
         function renderEditionDropdown() {
             const configs = editionsConfig[currentSheikhId]; if (!configs) return;
             const keys = Object.keys(configs);
+            const currentConfig = configs[currentEdition];
             
-            let html = `<div style="margin-bottom: 12px; font-size: 0.85rem; font-weight: 700; color: var(--text-main); padding: 0 5px;">${currentLang === 'ar' ? 'اختر الرواية:' : 'Select Narration:'}</div>`;
-            html += `<div class="edition-list-wrapper"><div class="edition-list" style="padding-bottom: 10px;">`;
+            let html = `<div class="edition-dropdown-wrapper" style="position: relative;">`;
+            html += `<button class="edition-dropdown-btn" onclick="toggleEditionDropdown(event)">`;
+            html += `<span>${currentLang === 'ar' ? currentConfig.pillAr : currentConfig.pillEn}</span>`;
+            html += `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+            html += `</button>`;
             
-            const pills = keys.map(key => {
+            html += `<div class="edition-dropdown-menu" id="edition-dropdown-menu">`;
+            
+            keys.forEach(key => {
                 const ed = configs[key];
                 const isActive = (key == currentEdition);
                 const isPlayingThisEdition = (currentSheikhId === playingSheikhId && key == playingEditionId && !audioInstance.paused && !isBuffering);
                 
-                return `<div class="edition-pill ${isActive ? 'active' : ''}" data-key="${key}" onclick="selectEditionDropdown(${key}, event)">
-                            <span>${currentLang === 'ar' ? ed.pillAr : ed.pillEn}</span>
-                            <span class="edition-type">${currentLang === 'ar' ? 'رواية' : 'Narration'}</span>
-                            ${isPlayingThisEdition ? '<span class="active-dot" style="background: #fff;"></span>' : ''}
-                        </div>`;
-            }).join('');
+                html += `<div class="edition-menu-item ${isActive ? 'active' : ''}" onclick="selectEditionDropdown(${key}, event)">`;
+                html += `<span>${currentLang === 'ar' ? ed.pillAr : ed.pillEn}</span>`;
+                html += `</div>`;
+            });
             
-            html += pills + `</div></div>`;
+            html += `</div></div>`;
             document.getElementById('edition-dropdown-wrapper').innerHTML = html;
             syncUIWithAudioState(); 
         }
+        
+        function toggleEditionDropdown(event) {
+            if (event) event.stopPropagation();
+            editionDropdownOpen = !editionDropdownOpen;
+            const menu = document.getElementById('edition-dropdown-menu');
+            const btn = event.target.closest('.edition-dropdown-btn');
+            if (editionDropdownOpen) {
+                menu.classList.add('show');
+                btn.classList.add('open');
+            } else {
+                menu.classList.remove('show');
+                btn.classList.remove('open');
+            }
+        }
+        
+        document.addEventListener('click', (e) => {
+            if (editionDropdownOpen && !e.target.closest('.edition-dropdown-wrapper')) {
+                editionDropdownOpen = false;
+                const menu = document.getElementById('edition-dropdown-menu');
+                if (menu) menu.classList.remove('show');
+                const btns = document.querySelectorAll('.edition-dropdown-btn');
+                btns.forEach(btn => btn.classList.remove('open'));
+            }
+        });
 
         async function selectEditionDropdown(num, event) {
-            if(event) event.stopPropagation(); if(currentEdition == num) return; 
-            currentEdition = num; savedReciterEditions[currentSheikhId] = num; 
-            updateHeaderUI(); renderEditionDropdown(); await loadEditionData(currentSheikhId, num);
+            if(event) event.stopPropagation();
+            if(currentEdition == num) {
+                editionDropdownOpen = false;
+                const menu = document.getElementById('edition-dropdown-menu');
+                if (menu) menu.classList.remove('show');
+                const btn = event.target.closest('.edition-dropdown-wrapper').querySelector('.edition-dropdown-btn');
+                if (btn) btn.classList.remove('open');
+                return;
+            }
+            currentEdition = num;
+            savedReciterEditions[currentSheikhId] = num;
+            editionDropdownOpen = false;
+            const menu = document.getElementById('edition-dropdown-menu');
+            if (menu) menu.classList.remove('show');
+            const btn = event.target.closest('.edition-dropdown-wrapper').querySelector('.edition-dropdown-btn');
+            if (btn) btn.classList.remove('open');
+            updateHeaderUI();
+            renderEditionDropdown();
+            await loadEditionData(currentSheikhId, num);
         }
 
         function playSurah(id, url) {
