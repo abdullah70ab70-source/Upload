@@ -81,7 +81,8 @@
         .top-btn svg { width: 18px; height: 18px; }
 
         header { text-align: center; padding-bottom: 20px; transition: 0.3s; }
-        .header-img { height: 85px; width: 85px; border-radius: 50%; border: 2px solid var(--accent-gold); box-shadow: 0 4px 20px var(--shadow-intensity); object-fit: cover; margin-bottom: 10px; }
+        .header-img { height: 115px; width: 115px; border-radius: 50%; border: 3px solid var(--accent-gold); box-shadow: 0 8px 25px var(--shadow-intensity); object-fit: cover; margin-bottom: 15px; transition: transform 0.3s ease; }
+        .header-img:hover { transform: scale(1.05); }
         header h1 { font-size: 1.15rem; font-weight: 300; margin-top: 5px; } 
         header h1 strong { font-weight: 700; color: var(--accent-gold); }
         header p { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
@@ -102,8 +103,34 @@
         .edition-list-wrapper { width: 100%; }
         .edition-list { display: flex; gap: 8px; overflow-x: auto; padding: 2px 5px 5px 5px; scrollbar-width: none; }
         .edition-list::-webkit-scrollbar { display: none; }
-        .edition-pill { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--bg-mid); border: 1px solid var(--glass-border); padding: 4px 12px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 6px var(--shadow-intensity); }
-        .edition-pill.active { background: var(--glass-active); color: var(--accent-gold); border-color: var(--accent-gold); }
+        .edition-pill { 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px; 
+            background: var(--bg-mid); 
+            border: 1px solid var(--glass-border); 
+            padding: 10px 15px; 
+            border-radius: 15px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            color: var(--text-muted); 
+            cursor: pointer; 
+            white-space: nowrap; 
+            box-shadow: 0 4px 12px var(--shadow-intensity);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 100px;
+        }
+        .edition-pill:hover { transform: translateY(-3px); border-color: var(--accent-gold); }
+        .edition-pill.active { 
+            background: var(--accent-gold); 
+            color: #fff; 
+            border-color: var(--accent-gold); 
+            box-shadow: 0 6px 15px rgba(197, 160, 89, 0.4);
+        }
+        .edition-pill .edition-type { font-size: 0.6rem; opacity: 0.8; font-weight: 400; }
+        .edition-pill.active .edition-type { color: #fff; }
         @keyframes flash-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(1.4); } }
         .active-dot { display: inline-block; width: 6px; height: 6px; background: var(--accent-gold); border-radius: 50%; animation: flash-dot 1.5s infinite ease-in-out; flex-shrink: 0; }
 
@@ -371,7 +398,16 @@
         let currentLang = 'ar';
 
         const recitersList = [ { id: "maasarawi", nameAr: "أحمد عيسى المعصراوي", nameEn: "Ahmed Issa Al-Maasarawi", image: "maasarawi.jpg" } ];
-        const editionsConfig = { "maasarawi": { 1: { pillAr: "حفص عن عاصم", pillEn: "Hafs A'n Asim", file: "maasarawi_1.json", descAr: "المصحف المرتل", descEn: "Murattal" } } };
+        const editionsConfig = { 
+            "maasarawi": { 
+                1: { pillAr: "حفص عن عاصم", pillEn: "Hafs A'n Asim", file: "maasarawi_1.json", descAr: "المصحف المرتل", descEn: "Murattal" },
+                2: { pillAr: "ورش عن نافع", pillEn: "Warsh A'n Nafi'", file: "maasarawi_1.json", descAr: "رواية ورش عن نافع", descEn: "Warsh" },
+                3: { pillAr: "قالون عن نافع", pillEn: "Qalun A'n Nafi'", file: "maasarawi_1.json", descAr: "رواية قالون عن نافع", descEn: "Qalun" },
+                4: { pillAr: "الدوري عن أبي عمرو", pillEn: "Al-Duri A'n Abu Amr", file: "maasarawi_1.json", descAr: "رواية الدوري عن أبي عمرو", descEn: "Al-Duri" },
+                5: { pillAr: "شعبة عن عاصم", pillEn: "Shu'bah A'n Asim", file: "maasarawi_1.json", descAr: "رواية شعبة عن عاصم", descEn: "Shu'bah" },
+                6: { pillAr: "خلف عن حمزة", pillEn: "Khalaf A'n Hamzah", file: "maasarawi_1.json", descAr: "رواية خلف عن حمزة", descEn: "Khalaf" }
+            } 
+        };
 
         const icons = {
             play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
@@ -727,9 +763,26 @@
         }
 
         function renderEditionDropdown() {
-            const configs = editionsConfig[currentSheikhId]; const keys = Object.keys(configs);
-            const pills = keys.map(key => `<div class="edition-pill ${currentEdition == key ? 'active' : ''}" data-key="${key}" onclick="selectEditionDropdown(${key}, event)">${currentLang === 'ar' ? configs[key].pillAr : configs[key].pillEn}</div>`).join('');
-            document.getElementById('edition-dropdown-wrapper').innerHTML = `<div class="edition-list-wrapper"><div class="edition-list">${pills}</div></div>`;
+            const configs = editionsConfig[currentSheikhId]; if (!configs) return;
+            const keys = Object.keys(configs);
+            
+            let html = `<div style="margin-bottom: 12px; font-size: 0.85rem; font-weight: 700; color: var(--text-main); padding: 0 5px;">${currentLang === 'ar' ? 'اختر الرواية:' : 'Select Narration:'}</div>`;
+            html += `<div class="edition-list-wrapper"><div class="edition-list" style="padding-bottom: 10px;">`;
+            
+            const pills = keys.map(key => {
+                const ed = configs[key];
+                const isActive = (key == currentEdition);
+                const isPlayingThisEdition = (currentSheikhId === playingSheikhId && key == playingEditionId && !audioInstance.paused && !isBuffering);
+                
+                return `<div class="edition-pill ${isActive ? 'active' : ''}" data-key="${key}" onclick="selectEditionDropdown(${key}, event)">
+                            <span>${currentLang === 'ar' ? ed.pillAr : ed.pillEn}</span>
+                            <span class="edition-type">${currentLang === 'ar' ? 'رواية' : 'Narration'}</span>
+                            ${isPlayingThisEdition ? '<span class="active-dot" style="background: #fff;"></span>' : ''}
+                        </div>`;
+            }).join('');
+            
+            html += pills + `</div></div>`;
+            document.getElementById('edition-dropdown-wrapper').innerHTML = html;
             syncUIWithAudioState(); 
         }
 
