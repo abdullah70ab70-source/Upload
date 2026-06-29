@@ -215,6 +215,8 @@
         .active-row .play-cell { background: var(--accent-gold); color: #fff; border-color: var(--accent-gold); box-shadow: 0 4px 10px rgba(197, 160, 89, 0.3); }
 
         .icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+        .floating-player .icon-btn { color: rgba(255, 255, 255, 0.85); }
+        .floating-player .icon-btn:hover { color: #fff; }
         .icon-btn.active-feature { color: var(--accent-gold) !important; }
 
         .download-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; }
@@ -224,12 +226,32 @@
         .dl-progress-fill { height: 100%; width: 0%; background: var(--accent-gold); border-radius: 10px; }
         .dl-modal-pct { margin-top: 12px; font-size: 0.9rem; font-weight: 700; color: var(--accent-gold); }
 
-        .floating-player { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; background: var(--player-bg); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid var(--glass-border); padding: 6px 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: none; z-index: 1000; }
+        .floating-player { 
+            position: fixed; 
+            bottom: 12px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 92%; 
+            max-width: 440px; 
+            background: linear-gradient(135deg, #c5a059 0%, #b38f4d 100%);
+            backdrop-filter: blur(20px); 
+            border-radius: 16px; 
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 15px; 
+            box-shadow: 0 12px 35px rgba(197, 160, 89, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            display: none; 
+            z-index: 1000;
+        }
+        body.dark-theme .floating-player {
+            background: linear-gradient(135deg, #8b6f47 0%, #6d5a3d 100%);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
         .player-seekbar-container { width: 100%; height: 12px; display: flex; align-items: center; cursor: pointer; direction: ltr; margin-bottom: 2px; touch-action: none; }
-        .player-seekbar-track { width: 100%; height: 4px; background: rgba(0,0,0,0.05); border-radius: 10px; position: relative; }
-        .player-seekbar-fill { height: 100%; background: var(--accent-gold); width: 0%; border-radius: 10px; pointer-events: none; }
-        .player-seekbar-thumb { position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent-gold); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .play-toggle-btn { background: var(--accent-gold); color: #fff; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(197, 160, 89, 0.4); }
+        .player-seekbar-track { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.25); border-radius: 10px; position: relative; }
+        .player-seekbar-fill { height: 100%; background: rgba(255, 255, 255, 0.8); width: 0%; border-radius: 10px; pointer-events: none; }
+        .player-seekbar-thumb { position: absolute; right: -6px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); }
+        .play-toggle-btn { background: #fff; color: #c5a059; border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); font-weight: 700; }
+        body.dark-theme .play-toggle-btn { color: #8b6f47; }
         .play-toggle-btn svg { width: 16px !important; height: 16px !important; }
         .icon-btn svg { width: 20px; height: 20px; }
 
@@ -522,7 +544,7 @@
             } catch (e) { console.log("Audio API Init Error:", e); }
         }
 
-        let currentTheme = 'light', currentSheikhId = "maasarawi", currentEdition = 1;
+        let currentTheme = 'light', currentSheikhId = "maasarawi", currentEdition = null;
         let activeSurahsData = [], playingSurahId = null, playingSheikhId = null, playingEditionId = null, isBuffering = false;
         let isFocusMode = false;
         let activeDownloads = {}; let savedReciterEditions = {}; let playbackMode = 'autonext'; let playbackMenuOpen = false;
@@ -797,12 +819,16 @@
         }
 
         function renderSurahsList() {
+            if (!currentEdition) {
+                document.getElementById('main-surah-list').innerHTML = `<div style="text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 1rem; font-family: Cairo, sans-serif;">${currentLang === 'ar' ? 'يرجى اختيار الرواية أولاً' : 'Please select a narration first'}</div>`;
+                return;
+            }
             document.getElementById('main-surah-list').innerHTML = activeSurahsData.map(s => {
                 return `<div class="surah-row" data-id="${s.id}">
                             <div class="surah-info"><span class="surah-number">${String(s.id).padStart(3, '0')}</span><span class="surah-name">${translations[currentLang].surahPrefix} ${getSurahName(s.id, s.name)}</span></div>
                             <div class="surah-actions" style="flex-direction: ${currentLang === 'ar' ? 'row' : 'row-reverse'};">
-                                <button class="surah-action-btn play-cell" onclick="playSurah(${s.id}, '${s.url}')">${icons.play}</button>
-                                <button class="surah-action-btn" onclick="startDownload(${s.id}, '${s.url}')" title="تحميل">${icons.download}</button>
+                                <button class="surah-action-btn play-cell" onclick="playSurah(${s.id}, '${s.url}')">` + icons.play + `</button>
+                                <button class="surah-action-btn" onclick="startDownload(${s.id}, '${s.url}')" title="تحميل">` + icons.download + `</button>
                             </div>
                         </div>`;
             }).join('');
@@ -833,15 +859,29 @@
 
         async function selectSheikh(id) {
             currentSheikhId = id;
-            if (id === playingSheikhId && playingEditionId && editionsConfig[id][playingEditionId]) currentEdition = playingEditionId; else currentEdition = savedReciterEditions[id] || 1;
-            updateHeaderUI(); renderEditionDropdown(); await loadEditionData(id, currentEdition);
+            // لا تختر رواية افتراضياً - اترك المستخدم يختار
+            if (id === playingSheikhId && playingEditionId && editionsConfig[id][playingEditionId]) {
+                currentEdition = playingEditionId;
+            } else if (savedReciterEditions[id]) {
+                currentEdition = savedReciterEditions[id];
+            } else {
+                currentEdition = null; // لا تختر افتراضياً
+            }
             
-            if (playingSurahId && playingSheikhId === id && playingEditionId === currentEdition) {
-                const sData = activeSurahsData.find(sur => sur.id === playingSurahId);
-                if(sData && audioInstance.src === "") {
-                    audioInstance.src = sData.url; document.getElementById('global-player').style.display = 'block';
-                    document.getElementById('player-track-title').innerText = `${translations[currentLang].surahPrefix} ${getSurahName(sData.id, sData.name)}`;
-                    syncUIWithAudioState();
+            updateHeaderUI();
+            renderEditionDropdown();
+            
+            // تحميل البيانات فقط إذا كانت هناك رواية مختارة
+            if (currentEdition) {
+                await loadEditionData(id, currentEdition);
+                
+                if (playingSurahId && playingSheikhId === id && playingEditionId === currentEdition) {
+                    const sData = activeSurahsData.find(sur => sur.id === playingSurahId);
+                    if(sData && audioInstance.src === "") {
+                        audioInstance.src = sData.url; document.getElementById('global-player').style.display = 'block';
+                        document.getElementById('player-track-title').innerText = `${translations[currentLang].surahPrefix} ${getSurahName(sData.id, sData.name)}`;
+                        syncUIWithAudioState();
+                    }
                 }
             }
         }
@@ -851,11 +891,11 @@
         function renderEditionDropdown() {
             const configs = editionsConfig[currentSheikhId]; if (!configs) return;
             const keys = Object.keys(configs);
-            const currentConfig = configs[currentEdition];
+            const currentConfig = currentEdition ? configs[currentEdition] : null;
             
             let html = `<div class="edition-dropdown-wrapper" style="position: relative;">`;
             html += `<button class="edition-dropdown-btn" onclick="toggleEditionDropdown(event)">`;
-            html += `<span>${currentLang === 'ar' ? currentConfig.pillAr : currentConfig.pillEn}</span>`;
+            html += `<span>${currentConfig ? (currentLang === 'ar' ? currentConfig.pillAr : currentConfig.pillEn) : (currentLang === 'ar' ? 'اختر الرواية' : 'Select Narration')}</span>`;
             html += `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
             html += `</button>`;
             
@@ -920,6 +960,7 @@
             updateHeaderUI();
             renderEditionDropdown();
             await loadEditionData(currentSheikhId, num);
+            renderSurahsList(); // إظهار السور بعد اختيار الرواية
         }
 
         function playSurah(id, url) {
@@ -1080,12 +1121,28 @@
 
         (async () => {
             document.getElementById('theme-toggle-btn').innerHTML = currentTheme === 'dark' ? icons.moon : icons.sun; setPlaybackMode('autonext'); 
-            currentSheikhId = 'maasarawi'; const savedState = JSON.parse(localStorage.getItem('lastPlayedQuran'));
-            if (savedState && savedState.sheikh === 'maasarawi') { savedReciterEditions['maasarawi'] = savedState.edition || 1; playingSheikhId = 'maasarawi'; playingEditionId = savedState.edition || 1; playingSurahId = savedState.surah; } else { localStorage.removeItem('lastPlayedQuran'); }
+            currentSheikhId = 'maasarawi';
+            currentEdition = null; // لا تختر رواية افتراضياً
             
-            await selectSheikh('maasarawi');
+            const savedState = JSON.parse(localStorage.getItem('lastPlayedQuran'));
+            if (savedState && savedState.sheikh === 'maasarawi') { 
+                savedReciterEditions['maasarawi'] = savedState.edition || 1; 
+                playingSheikhId = 'maasarawi'; 
+                playingEditionId = savedState.edition || 1; 
+                playingSurahId = savedState.surah; 
+            } else { 
+                localStorage.removeItem('lastPlayedQuran'); 
+            }
+            
+            // تهيئة القائمة المنسدلة بدون اختيار
+            renderEditionDropdown();
+            renderSurahsList();
+            updateHeaderUI();
 
             if(savedState && savedState.surah && savedState.sheikh === 'maasarawi') {
+                // إذا كان هناك حالة محفوظة، اختر الرواية المحفوظة تلقائياً
+                currentEdition = savedState.edition || 1;
+                await loadEditionData('maasarawi', currentEdition);
                 const sData = activeSurahsData.find(s => s.id === savedState.surah);
                 if(sData && audioInstance.src === "") {
                     const sName = getSurahName(sData.id, sData.name);
@@ -1093,6 +1150,8 @@
                     document.getElementById('resume-text').innerText = promptText; document.getElementById('resume-banner').classList.add('show');
                     window.resumeData = { id: sData.id, url: sData.url }; setTimeout(() => closeResumeBanner(), 15000);
                 }
+                renderEditionDropdown();
+                renderSurahsList();
             }
         })();
     </script>
