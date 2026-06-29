@@ -205,6 +205,12 @@
             padding: 2px 6px;
             border-radius: 8px;
             display: inline;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .quran-verse:hover {
+            background-color: var(--glass-active);
         }
 
         .quran-verse.active-verse {
@@ -483,7 +489,7 @@
                     }
 
                     if (ayahText.trim() !== '') {
-                        textHTML += `${introHTML}<span id="verse-${surahId}-${ayah.numberInSurah}" class="quran-verse">${ayahText} <span class="verse-end">﴿${ayah.numberInSurah}﴾</span></span> `;
+                        textHTML += `${introHTML}<span id="verse-${surahId}-${ayah.numberInSurah}" class="quran-verse" onclick="seekToVerse(${surahId}, ${ayah.numberInSurah})">${ayahText} <span class="verse-end">﴿${ayah.numberInSurah}﴾</span></span> `;
                     } else {
                         textHTML += `${introHTML}`;
                     }
@@ -513,6 +519,22 @@
                 }
             } catch (error) {
                 surahTimings[surahId] = null;
+            }
+        }
+
+        function seekToVerse(surahId, verseNumber) {
+            if (playingSurahId !== surahId) return;
+            
+            const timings = surahTimings[surahId];
+            if (timings) {
+                const verseData = timings.find(v => v.id === verseNumber);
+                if (verseData && verseData.start_time !== undefined) {
+                    audioInstance.currentTime = verseData.start_time;
+                    if (audioInstance.paused) {
+                        togglePlayPause();
+                    }
+                    showToast(currentLang === 'ar' ? `الانتقال إلى الآية ${verseNumber}` : `Seeking to Verse ${verseNumber}`);
+                }
             }
         }
 
