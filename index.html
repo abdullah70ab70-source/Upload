@@ -181,15 +181,20 @@
         body.focus-mode-active .top-bar-group,
         body.focus-mode-active .install-banner,
         body.focus-mode-active button[onclick="toggleLanguage()"] {
-            display: none !important; /* إخفاء الصورة والرأس وكل المشتتات */
+            display: none !important;
         }
 
         body.focus-mode-active .quran-text-container {
-            display: block; /* إظهار النص القرآني */
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            min-height: 100vh;
         }
 
         body.focus-mode-active {
-            display: block; /* منع التوسيط العمودي الافتراضي للسماح بتمرير الصفحة (Scroll) */
+            display: block !important;
+            overflow-y: auto !important;
+            height: auto !important;
         }
 
         /* =======================================================
@@ -563,20 +568,21 @@
                 if(!playingSurahId) {
                     document.getElementById('quran-text-content').innerHTML = '<div style="margin-top:50px; font-size:1.2rem; color:var(--text-muted); font-family: Cairo, sans-serif;">الرجاء تشغيل سورة أولاً للقراءة...</div>';
                 } else {
+                    // التأكد من تحميل النص عند تفعيل الوضع الهادئ
+                    loadSurahText(playingSurahId);
+                    
                     setTimeout(() => {
-                        if (audioInstance.duration) {
+                        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+                        if (audioInstance.duration && scrollableHeight > 0) {
                             const pct = audioInstance.currentTime / audioInstance.duration;
-                            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-                            if (scrollableHeight > 0) {
-                                targetScroll = pct * scrollableHeight;
-                                currentScroll = targetScroll;
-                                window.scrollTo(0, targetScroll);
-                            }
+                            targetScroll = pct * scrollableHeight;
+                            currentScroll = targetScroll;
+                            window.scrollTo(0, targetScroll);
                         } else {
                             window.scrollTo({ top: 0, behavior: 'auto' });
                             currentScroll = 0; targetScroll = 0;
                         }
-                    }, 100);
+                    }, 300);
                 }
                 
                 if (!scrollRafId) updateScrollLoop();
