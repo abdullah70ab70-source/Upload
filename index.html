@@ -687,8 +687,16 @@
                     if (currentEl) {
                         currentEl.classList.add('active-verse');
                         currentActiveVerse = activeVerseId;
+                        
                         // التمرير الفوري للآية
                         currentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // تحديث متغيرات التمرير لمنع القفز للأعلى في وضع التركيز
+                        if (isFocusMode) {
+                            const newTarget = currentEl.offsetTop - (window.innerHeight / 2) + (currentEl.offsetHeight / 2);
+                            targetScroll = Math.max(0, newTarget);
+                            currentScroll = targetScroll;
+                        }
                     }
                     
                     if (audioInstance.paused) {
