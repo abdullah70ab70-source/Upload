@@ -763,17 +763,41 @@
                     loadSurahText(playingSurahId);
                     
                     setTimeout(() => {
-                        const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-                        if (audioInstance.duration && scrollableHeight > 0) {
-                            const pct = audioInstance.currentTime / audioInstance.duration;
-                            targetScroll = pct * scrollableHeight;
+                        // محاولة إيجاد الآية الحالية وتوسيطها فوراً
+                        let activeVerseId = null;
+                        const timings = surahTimings[playingSurahId];
+                        if (timings) {
+                            const time = audioInstance.currentTime;
+                            const verseData = timings.find(v => time >= v.start_time && (v.end_time === null || time < v.end_time));
+                            if (verseData) activeVerseId = `verse-${playingSurahId}-${verseData.id}`;
+                        }
+
+                        const currentEl = activeVerseId ? document.getElementById(activeVerseId) : null;
+                        if (currentEl) {
+                            // إذا وجدت الآية، نوسطها فوراً
+                            targetScroll = currentEl.offsetTop - (window.innerHeight / 2) + (currentEl.offsetHeight / 2);
+                            targetScroll = Math.max(0, targetScroll);
                             currentScroll = targetScroll;
                             window.scrollTo(0, targetScroll);
+                            
+                            // تظليلها أيضاً
+                            if (currentActiveVerse) {
+                                const prevEl = document.getElementById(currentActiveVerse);
+                                if (prevEl) prevEl.classList.remove('active-verse');
+                            }
+                            currentEl.classList.add('active-verse');
+                            currentActiveVerse = activeVerseId;
                         } else {
-                            window.scrollTo({ top: 0, behavior: 'auto' });
-                            currentScroll = 0; targetScroll = 0;
+                            // إذا لم توجد توقيتات، نستخدم النسبة المئوية
+                            const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+                            if (audioInstance.duration && scrollableHeight > 0) {
+                                const pct = audioInstance.currentTime / audioInstance.duration;
+                                targetScroll = pct * scrollableHeight;
+                                currentScroll = targetScroll;
+                                window.scrollTo(0, targetScroll);
+                            }
                         }
-                    }, 300);
+                    }, 100);
                 }
                 
                 if (!scrollRafId) updateScrollLoop();
