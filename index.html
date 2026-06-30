@@ -576,7 +576,7 @@
         function updateScrollLoop() {
             if (isFocusMode) {
                 if (!isUserScrolling) {
-                    currentScroll += (targetScroll - currentScroll) * 0.008; 
+                    currentScroll += (targetScroll - currentScroll) * 0.08; // زيادة السرعة لتكون سلسة وملحوظة أكثر 
                     if (Math.abs(targetScroll - currentScroll) > 0.5) {
                         window.scrollTo(0, currentScroll);
                     }
@@ -1106,8 +1106,7 @@
                                 
                                 targetScroll = currentEl.offsetTop - (window.innerHeight / 2) + (currentEl.offsetHeight / 2);
                                 targetScroll = Math.max(0, targetScroll);
-                                currentScroll = targetScroll;
-                                window.scrollTo(0, targetScroll);
+                                // التمرير سيتم بسلاسة عبر updateScrollLoop دون قفز فوري
                             }
                         }
                     } else {
